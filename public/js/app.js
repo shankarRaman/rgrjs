@@ -1,10 +1,5 @@
-var React = require('react');
-var ReactDOM = require('react-dom');
+import React  from 'react';
+import ReactDOM from 'react-dom';
+import Main from "./components/Main"
 
-var Hello = React.createClass({
-	render: function(){
-		return <h3>Hello from Webpack </h3>;
-	}
-});
-
-ReactDOM.render(<Hello />, document.getElementById('react'));
+ReactDOM.render(<Main />, document.getElementById('react'));
