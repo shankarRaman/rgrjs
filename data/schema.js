@@ -1,13 +1,25 @@
 import {
-  GraphQLSchema, 
-  GraphQLObjectType, 
+  GraphQLSchema,
+  GraphQLObjectType,
   GraphQLInt,
   GraphQLString,
   GraphQLList
 } from 'graphql';
 
 let Schema = (db) => {
-	let linkType = new GraphQLObjectType({
+  let store ={};
+
+  let storeType = new GraphQLObjectType({
+    name: 'Store',
+    fields: () => ({
+      links: {
+        type: new GraphQLList(linkType),
+        resolve: () => db.collection("links").find({}).toArray()
+      }
+    })
+  });
+
+  let linkType = new GraphQLObjectType({
 		name: 'Link',
 		fields: () => ({
 			_id: {type: GraphQLString},
@@ -20,11 +32,15 @@ let Schema = (db) => {
 		query: new GraphQLObjectType({
 			name: 'Query',
 			fields: () => ({
-				links: {
-					type: new GraphQLList(linkType),
-					resolve: () => db.collection("links").find({}).toArray()
-				}
-			}) 
+				store: {
+					type: storeType,
+					resolve: () => store
+				},
+        message: {
+          type: GraphQLString,
+          resolve: () => "Hello GraphQL Again"
+        }
+			})
 		})
 	});
 	return schema;

@@ -11,17 +11,22 @@ let app = express();
 app.use(express.static('public'));
 
 (async () => {
-	let db = await MongoClient.connect('mongodb://rgr-user:password@ds049558.mongolab.com:49558/rgrjs');
-	let schema = Schema(db)
-	app.use('/graphql', GraphQLHTTP({
-	schema,
-	graphiql: true
-	}));
-	app.listen(3000, () => console.log("Listening on port 3000"));	
+	try{
+		let db = await MongoClient.connect('mongodb://rgr-user:password@ds049558.mongolab.com:49558/rgrjs');
+		let schema = Schema(db)
+		app.use('/graphql', GraphQLHTTP({
+		schema,
+		graphiql: true
+		}));
+		app.listen(3000, () => console.log("Listening on port 3000"));
 
-	//Generate schema.json
-	let json = await graphql(schema, introspectionQuery);
-	fs.writeFile('./data/schema.json', JSON.stringify(json, null, 2), err => {
-		console.log("JSON schema created");
-	})
+		//Generate schema.json
+		let json = await graphql(schema, introspectionQuery);
+		fs.writeFile('./data/schema.json', JSON.stringify(json, null, 2), err => {
+			console.log("JSON schema created");
+		})
+	}
+	catch(e){
+		console.log(e);
+	}
 })();
