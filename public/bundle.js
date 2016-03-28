@@ -42283,7 +42283,11 @@
 	
 	var _reactRelay2 = _interopRequireDefault(_reactRelay);
 	
-	var _link = __webpack_require__(/*! ./link */ 385);
+	var _CreateLinkMutation = __webpack_require__(/*! ../mutations/CreateLinkMutation */ 385);
+	
+	var _CreateLinkMutation2 = _interopRequireDefault(_CreateLinkMutation);
+	
+	var _link = __webpack_require__(/*! ./link */ 386);
 	
 	var _link2 = _interopRequireDefault(_link);
 	
@@ -42299,16 +42303,36 @@
 		_inherits(Main, _React$Component);
 	
 		function Main() {
+			var _Object$getPrototypeO;
+	
+			var _temp, _this, _ret;
+	
 			_classCallCheck(this, Main);
 	
-			return _possibleConstructorReturn(this, Object.getPrototypeOf(Main).apply(this, arguments));
+			for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+				args[_key] = arguments[_key];
+			}
+	
+			return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(Main)).call.apply(_Object$getPrototypeO, [this].concat(args))), _this), _this.setLimit = function (e) {
+				var newLimit = Number(e.target.value);
+				_this.props.relay.setVariables({ limit: newLimit });
+			}, _this.handleSubmit = function (e) {
+				e.preventDefault();
+				_reactRelay2.default.Store.update(new _CreateLinkMutation2.default({
+					title: _this.refs.newTitle.value,
+					url: _this.refs.newUrl.value,
+					store: _this.props.store
+				}));
+				_this.refs.newTitle.value = "";
+				_this.refs.newUrl.value = "";
+			}, _temp), _possibleConstructorReturn(_this, _ret);
 		}
 	
 		_createClass(Main, [{
 			key: 'render',
 			value: function render() {
-				var content = this.props.store.links.slice(0, this.props.limit).map(function (link) {
-					return _react2.default.createElement(_link2.default, { key: link._id, link: link });
+				var content = this.props.store.linkConnection.edges.map(function (edge) {
+					return _react2.default.createElement(_link2.default, { key: edge.node.id, link: edge.node });
 				});
 				return _react2.default.createElement(
 					'div',
@@ -42317,6 +42341,26 @@
 						'h3',
 						null,
 						'Links'
+					),
+					_react2.default.createElement(
+						'form',
+						{ onSubmit: this.handleSubmit },
+						_react2.default.createElement('input', { type: 'text', placeholder: 'Title', ref: 'newTitle' }),
+						_react2.default.createElement('input', { type: 'text', placeholder: 'Url', ref: 'newUrl' })
+					),
+					_react2.default.createElement(
+						'select',
+						{ onChange: this.setLimit },
+						_react2.default.createElement(
+							'option',
+							{ value: '1' },
+							'1'
+						),
+						_react2.default.createElement(
+							'option',
+							{ value: '5' },
+							'5'
+						)
 					),
 					_react2.default.createElement(
 						'ul',
@@ -42339,23 +42383,93 @@
 	
 	
 	Main = _reactRelay2.default.createContainer(Main, {
+		initialVariables: {
+			limit: 3
+		},
 		fragments: {
 			store: function store() {
 				return function (RQL_0) {
 					return {
 						children: [{
-							children: [{
-								fieldName: '_id',
-								kind: 'Field',
-								metadata: {},
-								type: 'String'
-							}, _reactRelay2.default.QL.__frag(RQL_0)],
-							fieldName: 'links',
+							fieldName: 'id',
 							kind: 'Field',
 							metadata: {
-								isPlural: true
+								isRequisite: true
 							},
-							type: 'Link'
+							type: 'ID'
+						}, {
+							calls: [{
+								kind: 'Call',
+								metadata: {},
+								name: 'first',
+								value: {
+									kind: 'CallVariable',
+									callVariableName: 'limit'
+								}
+							}],
+							children: [{
+								children: [{
+									children: [{
+										fieldName: 'id',
+										kind: 'Field',
+										metadata: {
+											isRequisite: true
+										},
+										type: 'ID'
+									}, _reactRelay2.default.QL.__frag(RQL_0)],
+									fieldName: 'node',
+									kind: 'Field',
+									metadata: {
+										isRequisite: true
+									},
+									type: 'Link'
+								}, {
+									fieldName: 'cursor',
+									kind: 'Field',
+									metadata: {
+										isGenerated: true,
+										isRequisite: true
+									},
+									type: 'String'
+								}],
+								fieldName: 'edges',
+								kind: 'Field',
+								metadata: {
+									isPlural: true
+								},
+								type: 'LinkEdge'
+							}, {
+								children: [{
+									fieldName: 'hasNextPage',
+									kind: 'Field',
+									metadata: {
+										isGenerated: true,
+										isRequisite: true
+									},
+									type: 'Boolean'
+								}, {
+									fieldName: 'hasPreviousPage',
+									kind: 'Field',
+									metadata: {
+										isGenerated: true,
+										isRequisite: true
+									},
+									type: 'Boolean'
+								}],
+								fieldName: 'pageInfo',
+								kind: 'Field',
+								metadata: {
+									isGenerated: true,
+									isRequisite: true
+								},
+								type: 'PageInfo'
+							}],
+							fieldName: 'linkConnection',
+							kind: 'Field',
+							metadata: {
+								isConnection: true
+							},
+							type: 'LinkConnection'
 						}],
 						kind: 'Fragment',
 						metadata: {},
@@ -42371,6 +42485,90 @@
 
 /***/ },
 /* 385 */
+/*!***************************************************!*\
+  !*** ./public/js/mutations/CreateLinkMutation.js ***!
+  \***************************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _reactRelay = __webpack_require__(/*! react-relay */ 159);
+	
+	var _reactRelay2 = _interopRequireDefault(_reactRelay);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var CreateLinkMutation = function (_Relay$Mutation) {
+	  _inherits(CreateLinkMutation, _Relay$Mutation);
+	
+	  function CreateLinkMutation() {
+	    _classCallCheck(this, CreateLinkMutation);
+	
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(CreateLinkMutation).apply(this, arguments));
+	  }
+	
+	  _createClass(CreateLinkMutation, [{
+	    key: 'getMutation',
+	    value: function getMutation() {
+	      return function () {
+	        return {
+	          calls: [{
+	            kind: 'Call',
+	            metadata: {},
+	            name: 'createLink',
+	            value: {
+	              kind: 'CallVariable',
+	              callVariableName: 'input'
+	            }
+	          }],
+	          children: [{
+	            fieldName: 'clientMutationId',
+	            kind: 'Field',
+	            metadata: {
+	              isGenerated: true,
+	              isRequisite: true
+	            },
+	            type: 'String'
+	          }],
+	          kind: 'Mutation',
+	          metadata: {
+	            inputType: 'CreateLinkInput!'
+	          },
+	          name: 'CreateLinkMutation',
+	          responseType: 'CreateLinkPayload'
+	        };
+	      }();
+	    }
+	  }, {
+	    key: 'getVariables',
+	    value: function getVariables() {
+	      return {
+	        title: this.props.title,
+	        url: this.props.url
+	      };
+	    }
+	  }, {
+	    key: 'getFatQuery',
+	    value: function getFatQuery() {
+	      return function () {
+	        throw new Error('GraphQL validation/transform error ``Syntax Error CreateLinkMutation (3:7) Expected Name, found }\n\n2:         \n3:       }\n         ^\n`` in file `/Users/kon7993/projects/rgrjs/public/js/mutations/CreateLinkMutation.js`.');
+	      }();
+	    }
+	  }]);
+	
+	  return CreateLinkMutation;
+	}(_reactRelay2.default.Mutation);
+
+/***/ },
+/* 386 */
 /*!**************************************!*\
   !*** ./public/js/components/link.js ***!
   \**************************************/
@@ -42444,6 +42642,14 @@
 	            kind: 'Field',
 	            metadata: {},
 	            type: 'String'
+	          }, {
+	            fieldName: 'id',
+	            kind: 'Field',
+	            metadata: {
+	              isGenerated: true,
+	              isRequisite: true
+	            },
+	            type: 'ID'
 	          }],
 	          kind: 'Fragment',
 	          metadata: {},
