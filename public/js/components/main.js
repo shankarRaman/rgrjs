@@ -1,6 +1,6 @@
 import React  from 'react';
 import Relay from 'react-relay';
-import CreateLinkMutation from '../mutations/CreateLinkMutation'
+import CreateLinkMutation from '../mutations/CreateLinkMutation';
 import Link from "./link";
 
 class Main extends React.Component {
@@ -16,13 +16,13 @@ class Main extends React.Component {
 	}
 	handleSubmit = (e) => {
 		e.preventDefault();
-		Relay.Store.update(
+		Relay.Store.commitUpdate(
 			new CreateLinkMutation({
 				title: this.refs.newTitle.value,
 				url: this.refs.newUrl.value,
 				store: this.props.store
 			})
-		)
+		);
 		this.refs.newTitle.value = ""
 		this.refs.newUrl.value = ""
 	}
@@ -36,10 +36,11 @@ class Main extends React.Component {
 				<form onSubmit={this.handleSubmit}>
 					<input type="text" placeholder="Title" ref="newTitle" />
 					<input type="text" placeholder="Url" ref="newUrl" />
+					<button type="submit">Add</button>
 				</form>
-				<select onChange={this.setLimit}>
-					<option value="1">1</option>
-					<option value="5">5</option>
+				<select onChange={this.setLimit} defaultValue={this.props.relay.variables.limit}>
+					<option value="10">10</option>
+					<option value="50">50</option>
 				</select>
 				<ul>
 					{content}

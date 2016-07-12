@@ -42318,7 +42318,7 @@
 				_this.props.relay.setVariables({ limit: newLimit });
 			}, _this.handleSubmit = function (e) {
 				e.preventDefault();
-				_reactRelay2.default.Store.update(new _CreateLinkMutation2.default({
+				_reactRelay2.default.Store.commitUpdate(new _CreateLinkMutation2.default({
 					title: _this.refs.newTitle.value,
 					url: _this.refs.newUrl.value,
 					store: _this.props.store
@@ -42346,20 +42346,25 @@
 						'form',
 						{ onSubmit: this.handleSubmit },
 						_react2.default.createElement('input', { type: 'text', placeholder: 'Title', ref: 'newTitle' }),
-						_react2.default.createElement('input', { type: 'text', placeholder: 'Url', ref: 'newUrl' })
+						_react2.default.createElement('input', { type: 'text', placeholder: 'Url', ref: 'newUrl' }),
+						_react2.default.createElement(
+							'button',
+							{ type: 'submit' },
+							'Add'
+						)
 					),
 					_react2.default.createElement(
 						'select',
-						{ onChange: this.setLimit },
+						{ onChange: this.setLimit, defaultValue: this.props.relay.variables.limit },
 						_react2.default.createElement(
 							'option',
-							{ value: '1' },
-							'1'
+							{ value: '10' },
+							'10'
 						),
 						_react2.default.createElement(
 							'option',
-							{ value: '5' },
-							'5'
+							{ value: '50' },
+							'50'
 						)
 					),
 					_react2.default.createElement(
@@ -42492,6 +42497,10 @@
 
 	'use strict';
 	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	var _reactRelay = __webpack_require__(/*! react-relay */ 159);
@@ -42559,13 +42568,99 @@
 	    key: 'getFatQuery',
 	    value: function getFatQuery() {
 	      return function () {
-	        throw new Error('GraphQL validation/transform error ``Syntax Error CreateLinkMutation (3:7) Expected Name, found }\n\n2:         \n3:       }\n         ^\n`` in file `/Users/kon7993/projects/rgrjs/public/js/mutations/CreateLinkMutation.js`.');
+	        return {
+	          children: [{
+	            children: [{
+	              fieldName: 'cursor',
+	              kind: 'Field',
+	              metadata: {
+	                isGenerated: true,
+	                isRequisite: true
+	              },
+	              type: 'String'
+	            }, {
+	              children: [{
+	                fieldName: 'id',
+	                kind: 'Field',
+	                metadata: {
+	                  isGenerated: true,
+	                  isRequisite: true
+	                },
+	                type: 'ID'
+	              }],
+	              fieldName: 'node',
+	              kind: 'Field',
+	              metadata: {
+	                isGenerated: true,
+	                isRequisite: true
+	              },
+	              type: 'Link'
+	            }],
+	            fieldName: 'linkEdge',
+	            kind: 'Field',
+	            metadata: {},
+	            type: 'LinkEdge'
+	          }, {
+	            children: [{
+	              fieldName: 'linkConnection',
+	              kind: 'Field',
+	              metadata: {
+	                isConnection: true
+	              },
+	              type: 'LinkConnection'
+	            }, {
+	              fieldName: 'id',
+	              kind: 'Field',
+	              metadata: {
+	                isGenerated: true,
+	                isRequisite: true
+	              },
+	              type: 'ID'
+	            }],
+	            fieldName: 'store',
+	            kind: 'Field',
+	            metadata: {},
+	            type: 'Store'
+	          }],
+	          kind: 'Fragment',
+	          metadata: {},
+	          name: 'CreateLinkMutation',
+	          type: 'CreateLinkPayload'
+	        };
 	      }();
+	    }
+	  }, {
+	    key: 'getConfigs',
+	    value: function getConfigs() {
+	      return [{
+	        type: 'RANGE_ADD',
+	        parentName: 'store',
+	        parentID: this.props.store.id,
+	        connectionName: 'linkConnection',
+	        edgeName: 'linkEdge',
+	        rangeBehaviors: {
+	          '': 'prepend'
+	        }
+	      }];
+	    }
+	  }, {
+	    key: 'getOptimisticResponse',
+	    value: function getOptimisticResponse() {
+	      return {
+	        linkEdge: {
+	          node: {
+	            title: this.props.title,
+	            url: this.props.url
+	          }
+	        }
+	      };
 	    }
 	  }]);
 	
 	  return CreateLinkMutation;
 	}(_reactRelay2.default.Mutation);
+	
+	exports.default = CreateLinkMutation;
 
 /***/ },
 /* 386 */
