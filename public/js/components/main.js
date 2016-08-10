@@ -39,8 +39,8 @@ class Main extends React.Component {
 					<button type="submit">Add</button>
 				</form>
 				<select onChange={this.setLimit} defaultValue={this.props.relay.variables.limit}>
-					<option value="10">10</option>
-					<option value="50">50</option>
+					<option value="2">2</option>
+					<option value="5">5</option>
 				</select>
 				<ul>
 					{content}

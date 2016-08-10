@@ -8,9 +8,9 @@ module.exports = {
 		loaders: [
 			{
 				test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader',
-				query: { 
+				query: {
 					presets: ['react', 'es2015', 'stage-0'],
-					plugins: ['./babelRelayPlugin']
+					plugins: [__dirname + '/babelRelayPlugin']
 				}
 			}
 		]
